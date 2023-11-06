@@ -1,20 +1,25 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Sandbox.Console;
 
-var builder = Host.CreateDefaultBuilder().ConfigureServices((_, services) =>
-{
-  services.AddTransient<IFoo, Foo>();
-  services.AddSingleton<SandboxApp>();
-});
-
-using var host = builder.Build();
-using var scope = host.Services.CreateScope();
+HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+builder.Services.AddTransient<IFoo, Foo>();
+builder.Services.AddSingleton<SandboxApp>();
+builder.Services.AddOptions<SandboxSettings>()
+  .BindConfiguration(nameof(SandboxSettings))
+  .ValidateDataAnnotations()
+  .ValidateOnStart();
+string environmentName = builder.Environment.EnvironmentName;
+using IHost host = builder.Build();
+using IServiceScope scope = host.Services.CreateScope();
+ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 try
 {
+  logger.LogInformation("Starting in Environment {EnvironmentName}", environmentName);
   scope.ServiceProvider.GetRequiredService<SandboxApp>().Go();
 }
 catch (Exception e)
 {
-  Console.WriteLine(e.Message);
+  logger.LogError(e, "Error starting");
 }
