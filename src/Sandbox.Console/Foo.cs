@@ -1,6 +1,8 @@
-﻿namespace Sandbox.Console;
+﻿using Microsoft.Extensions.Logging;
 
-public class Foo : IFoo
+namespace Sandbox.Console;
+
+public class Foo(ILogger<Foo> logger) : IFoo
 {
-  public void DoSomething() => System.Console.WriteLine("Something!");
+  public void DoSomething() => logger.LogInformation("Doing something in Foo");
 }
