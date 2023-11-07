@@ -2,14 +2,17 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sandbox.Console;
+using Serilog;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder();
+
 builder.Services.AddTransient<IFoo, Foo>();
 builder.Services.AddSingleton<SandboxApp>();
 builder.Services.AddOptions<SandboxSettings>()
   .BindConfiguration(nameof(SandboxSettings))
   .ValidateDataAnnotations()
   .ValidateOnStart();
+builder.Services.AddSerilog(config => config.ReadFrom.Configuration(builder.Configuration));
 string environmentName = builder.Environment.EnvironmentName;
 using IHost host = builder.Build();
 using IServiceScope scope = host.Services.CreateScope();
