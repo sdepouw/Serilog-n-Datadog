@@ -10,13 +10,13 @@ public class Foo(ILogger<Foo> logger, IOptions<SandboxSettings> settings) : IFoo
     logger.LogInformation("Doing something in Foo: {Something}", settings.Value.Something);
     List<LogLevel> logLevels = new()
     {
-      LogLevel.Trace,
-      LogLevel.Debug,
-      LogLevel.Information,
-      LogLevel.Warning,
-      LogLevel.Error,
-      LogLevel.Critical,
-      LogLevel.None
+      LogLevel.None, // Never logged
+      LogLevel.Trace, // Verbose
+      LogLevel.Debug, // Debug
+      LogLevel.Information, // Information (default when non Minimum set)
+      LogLevel.Warning, // Warning
+      LogLevel.Error, // Error
+      LogLevel.Critical // Fatal
     };
     foreach (LogLevel level in logLevels)
     {
